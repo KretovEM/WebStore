@@ -43,5 +43,15 @@ namespace WebStore.Controllers
             //return Content("Hello from controller");
             return View(_employeeViews);
         }
+
+        // GET: /home/Details/{id}
+        public IActionResult Details(int id)
+        {
+            var employee = _employeeViews.FirstOrDefault(x => x.Id == id);
+            if (employee == null)
+                return NotFound();
+
+            return View(employee);
+        }
     }
 }
