@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+@await Html.PartialAsync("_Partial/_HeadLinks")
+
+<body>
+    @await Html.PartialAsync("_Partial/_Header")
+
+    @RenderBody()
+
+    @await Html.PartialAsync("_Partial/_Footer")
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/js/jquery.scrollUp.min.js"></script>
+    <script src="~/js/price-range.js"></script>
+    <script src="~/js/jquery.prettyPhoto.js"></script>
+    <script src="~/js/main.js"></script>
+</body>
+</html>
+
+
