@@ -44,7 +44,7 @@ namespace WebStore.Controllers
             return View(_employeeViews);
         }
 
-        // GET: /home/Details/{id}
+        // GET: /home/Details/{id}//
         public IActionResult Details(int id)
         {
             var employee = _employeeViews.FirstOrDefault(x => x.Id == id);
