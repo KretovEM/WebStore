@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebStore.Infrastructure;
 
 namespace WebStore
 {
@@ -38,6 +39,15 @@ namespace WebStore
 
             app.UseStaticFiles();
 
+            app.Map("/index", CustomIndexHandler);
+
+            // вернёт WelcomePage, можно использовать как заглушку или вместо Run в конце
+            app.UseWelcomePage("/welcome");
+
+            UseSample(app);
+
+            app.UseMiddleware<TokenMiddleware>();
+
             var helloMessage = _configuration["CustomHelloWorld"];
             var logLevel = _configuration["Logging:LogLevel:Microsoft"];
             
@@ -48,11 +58,44 @@ namespace WebStore
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                    
-                //endpoints.MapGet("/", async context =>
-                //{
-                //    await context.Response.WriteAsync(helloMessage);
-                //});
+
+                endpoints.MapGet("/hello", async context =>
+                {
+                    await context.Response.WriteAsync(helloMessage);
+                });
+            });
+
+            app.Run(async context =>
+            {
+                await context.Response.WriteAsync("Не нашлось подходящего обработчика для данного запроса");
+            });
+
+        }
+
+        private void UseSample(IApplicationBuilder app)
+        {
+            app.Use(async (context, next) =>
+            {
+                var isError = false;
+                // Todo: Логика на наличие ошибок
+                // ...
+                if (isError)
+                {
+                    await context.Response.WriteAsync("Error occured. You're in custom pipeline module...");
+                }
+                else
+                {
+                    // Если не вызвать данный метод, то не произойдет передача обработки запроса дальше
+                    await next.Invoke();
+                }
+            });
+        }
+
+        private void CustomIndexHandler(IApplicationBuilder app)
+        {
+            app.Run(async context =>
+            {
+                await context.Response.WriteAsync("Hello from custom middleware Index handler");
             });
         }
     }
