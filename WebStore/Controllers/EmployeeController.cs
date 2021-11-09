@@ -32,5 +32,44 @@ namespace WebStore.Controllers
 
             return View(employee);
         }
+
+        public IActionResult Edit(int? id)
+        {
+            if (!id.HasValue)
+                return View(new EmployeeView());
+
+            EmployeeView model = _employeesService.GetById(id.Value);
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(EmployeeView model)
+        {
+            if (model.Id > 0)
+            {
+                var employee = _employeesService.GetById(model.Id);
+
+                if (ReferenceEquals(employee, null))
+                    return NotFound();
+
+                employee.FirstName = model.FirstName;
+                employee.SurName = model.SurName;
+                employee.Age = model.Age;
+                employee.Patronymic = model.Patronymic;
+                employee.Position = model.Position;
+            }
+            else
+            {
+                _employeesService.AddNew(model);
+            }
+            _employeesService.Commit();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
