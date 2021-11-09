@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebStore.Infrastructure;
+using WebStore.Infrastructure.Implementations;
+using WebStore.Infrastructure.Interface;
 
 namespace WebStore
 {
@@ -27,6 +29,9 @@ namespace WebStore
         {
             //Добавляем сервисы, необоходимые для mvc
             services.AddMvc();
+
+            // Добавляем разрешение зависимости
+            services.AddSingleton<IEmployeesService, InMemoryEmployeesService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

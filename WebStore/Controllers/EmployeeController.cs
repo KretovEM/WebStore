@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebStore.Infrastructure.Interface;
 using WebStore.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,43 +12,21 @@ namespace WebStore.Controllers
 {
     public class EmployeeController : Controller
     {
+        private readonly IEmployeesService _employeesService;
 
-        private readonly List<EmployeeView> _employeeViews = new List<EmployeeView>
+        public EmployeeController(IEmployeesService employeesService)
         {
-            new EmployeeView
-            {
-                Id  = 1,
-                FirstName = "Jack",
-                SurName = "James",
-                Patronymic = "Jeelenhole",
-                Age = 22,
-                Position = "Headhunter"
-            },
-            new EmployeeView
-            {
-                Id  = 2,
-                FirstName = "Bob",
-                SurName = "Bubles",
-                Patronymic = "Bet",
-                Age = 35,
-                Position = "Tracktirshik"
-            },
-        };
-
-        // GET: /<controller>/
-        // GET: /
-        // GET: /home/
-        // GET: /home/index
-        public IActionResult Index()
-        {
-            //return Content("Hello from controller");
-            return View(_employeeViews);
+            _employeesService = employeesService;
         }
 
-        // GET: /home/Details/{id}//
+        public IActionResult Index()
+        {
+            return View(_employeesService.GetAll());
+        }
+
         public IActionResult Details(int id)
         {
-            var employee = _employeeViews.FirstOrDefault(x => x.Id == id);
+            var employee = _employeesService.GetById(id);
             if (employee == null)
                 return NotFound();
 
