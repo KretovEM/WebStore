@@ -71,5 +71,12 @@ namespace WebStore.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Delete(int id)
+        {
+            _employeesService.Delete(id);
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
