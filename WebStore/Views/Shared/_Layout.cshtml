@@ -4,8 +4,10 @@
 
 <body>
     @await Html.PartialAsync("_Partial/_Header")
-
-    @RenderBody()
+    
+    <div class="container">
+        @RenderBody()
+    </div>
 
     @await Html.PartialAsync("_Partial/_Footer")
 
