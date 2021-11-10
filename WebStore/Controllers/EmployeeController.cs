@@ -50,6 +50,14 @@ namespace WebStore.Controllers
         [HttpPost]
         public IActionResult Edit(EmployeeView model)
         {
+            if (model.Age < 18 || model.Age > 100)
+            {
+                ModelState.AddModelError("Age","Ошибка возраста!");
+            }
+
+            if (!ModelState.IsValid)
+                return View(model);
+
             if (model.Id > 0)
             {
                 var employee = _employeesService.GetById(model.Id);
