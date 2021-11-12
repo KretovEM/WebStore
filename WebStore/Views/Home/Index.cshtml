@@ -1,4 +1,7 @@
-﻿
+﻿@model WebStore.Models.CatalogViewModel
+@{
+    ViewData["Title"] = "Shop";
+}
 @{
     ViewData["Title"] = "Главная страница";
 }
@@ -13,7 +16,7 @@
             </div>
 
             <div class="col-sm-9 padding-right">
-                @await Html.PartialAsync("_Partial/_FeaturesItems")
+                @await Html.PartialAsync("_Partial/_FeaturesItems", Model.Products)
 
                 @await Html.PartialAsync("_Partial/_CategoryTab")
 
