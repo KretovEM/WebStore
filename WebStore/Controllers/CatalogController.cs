@@ -9,24 +9,29 @@ using WebStore.Models;
 
 namespace WebStore.Controllers
 {
-    public class HomeController : Controller
+    public class CatalogController : Controller
     {
         private readonly IProductService _productService;
-        public HomeController(IProductService productService)
+
+        public CatalogController(IProductService productService)
         {
             _productService = productService;
         }
-        public IActionResult Index()
+        public IActionResult ProductDetails()
+        {
+            return View();
+        }
+        public IActionResult Shop(int? categoryId, int? brandId)
         {
             // получаем список отфильтрованных продуктов
             var products = _productService.GetProducts(
-                new ProductFilter { BrandId = null, CategoryId = null });
+                new ProductFilter { BrandId = brandId, CategoryId = categoryId });
 
             // сконвертируем в CatalogViewModel
             var model = new CatalogViewModel()
             {
-                BrandId = null,
-                CategoryId = null,
+                BrandId = brandId,
+                CategoryId = categoryId,
                 Products = products.Select(p => new ProductViewModel()
                 {
                     Id = p.Id,
@@ -38,39 +43,6 @@ namespace WebStore.Controllers
             };
 
             return View(model);
-        }
-
-        public IActionResult Error404()
-        {
-            return View();
-        }
-
-        public IActionResult Blog()
-        {
-            return View();
-        }
-
-        public IActionResult BlogSingle()
-        {
-            return View();
-        }
-
-        public IActionResult Cart()
-        {
-            return View();
-        }
-
-        public IActionResult Checkout()
-        {
-            return View();
-        }
-        public IActionResult ContactUs()
-        {
-            return View();
-        }
-        public IActionResult Login()
-        {
-            return View();
         }
     }
 }
