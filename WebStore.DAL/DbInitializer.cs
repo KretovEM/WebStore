@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
+using Microsoft.EntityFrameworkCore;
 using WebStore.DomainNew.Entities;
-using WebStore.DomainNew.Filters;
-using WebStore.Infrastructure.Interface;
 
-namespace WebStore.Infrastructure.Implementations
+namespace WebStore.DAL
 {
-    public class InMemoryProductService : IProductService
+    public static class DbInitializer
     {
-        private readonly List<Category> _categories;
-        private readonly List<Brand> _brands;
-        private readonly List<Product> _products;
-        public InMemoryProductService()
+        public static void Initialize(WebStoreContext context)
         {
-            _categories = new List<Category>()
+            context.Database.EnsureCreated();
+            // Look for any products.
+            if (context.Products.Any())
+            {
+                return;   // DB had already been seeded
+            }
+
+            var categories = new List<Category>()
             {
                 new Category()
                 {
@@ -228,7 +231,20 @@ namespace WebStore.Infrastructure.Implementations
                     ParentId = null
                 }
             };
-            _brands = new List<Brand>()
+            using (var trans = context.Database.BeginTransaction())
+            {
+                foreach (var section in categories)
+                {
+                    context.Categories.Add(section);
+                }
+
+                context.Database.ExecuteSqlInterpolated($"SET IDENTITY_INSERT [dbo].[Categories] ON");
+                context.SaveChanges();
+                context.Database.ExecuteSqlInterpolated($"SET IDENTITY_INSERT [dbo].[Categories] OFF");
+                trans.Commit();
+            }
+
+            var brands = new List<Brand>()
             {
                 new Brand()
                 {
@@ -273,7 +289,20 @@ namespace WebStore.Infrastructure.Implementations
                     Order = 6
                 },
             };
-            _products = new List<Product>()
+            using (var trans = context.Database.BeginTransaction())
+            {
+                foreach (var brand in brands)
+                {
+                    context.Brands.Add(brand);
+                }
+                
+                context.Database.ExecuteSqlInterpolated($"SET IDENTITY_INSERT [dbo].[Brands] ON");
+                context.SaveChanges();
+                context.Database.ExecuteSqlInterpolated($"SET IDENTITY_INSERT [dbo].[Brands] OFF");
+                trans.Commit();
+            }
+
+            var products = new List<Product>()
             {
                 new Product()
                 {
@@ -396,32 +425,17 @@ namespace WebStore.Infrastructure.Implementations
                     BrandId = 3
                 },
             };
-        }
-
-        public IEnumerable<Category> GetCategories()
-        {
-            return _categories;
-        }
-
-        public IEnumerable<Brand> GetBrands()
-        {
-            return _brands;
-        }
-
-        public IEnumerable<Product> GetProducts(ProductFilter filter)
-        {
-            var products = _products;
-
-            if (filter.CategoryId.HasValue)
-                products = products
-                    .Where(p => p.CategoryId.Equals(filter.CategoryId))
-                    .ToList();
-            if (filter.BrandId.HasValue)
-                products = products
-                    .Where(p => p.BrandId.HasValue && p.BrandId.Value == filter.BrandId.Value)
-                    .ToList();
-
-            return products;
+            using (var trans = context.Database.BeginTransaction())
+            {
+                foreach (var product in products)
+                {
+                    context.Products.Add(product);
+                }
+                context.Database.ExecuteSqlInterpolated($"SET IDENTITY_INSERT [dbo].[Products] ON");
+                context.SaveChanges();
+                context.Database.ExecuteSqlInterpolated($"SET IDENTITY_INSERT [dbo].[Products] OFF");
+                trans.Commit();
+            }
         }
     }
 }
